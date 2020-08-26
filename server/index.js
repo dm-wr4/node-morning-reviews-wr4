@@ -1,31 +1,17 @@
 const express = require('express')
-const users = require('../users.json')
+const usersCtrl = require('./controllers/usersController')
 
 const app = express()
 const port = 4545
 
-app.get('/api/users', (req, res) => {
-    console.log('hit')
-    res.send(users)
-})
+app.use(express.json())
 
-app.get('/api/user/:user_id', (req, res) => {
+app.use(express.static(__dirname + '/../public'))
 
-    console.log(req.params)
-    // const id = req.params.id
-    const {user_id} = req.params
-
-    if(!user_id){
-        res.status(404).send('Unable to find resource')
-    }
-
-    const user = users.find(user => user.id === +user_id)
-
-    if(!user){
-        res.status(500).send('Unable to find user')
-    }
-
-    res.status(200).send(user)
-})
+app.get('/api/users', usersCtrl.getAllUsers)
+app.get('/api/users/:user_id', usersCtrl.getUserById)
+app.post('/api/users', usersCtrl.createUser)
+app.put('/api/users/:user_id', usersCtrl.updateUser)
+app.delete('/api/users/:user_id', usersCtrl.deleteUser)
 
 app.listen(port, () => console.log(`Take us to warp ${port}!`))
